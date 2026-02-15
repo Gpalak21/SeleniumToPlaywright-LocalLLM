@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Selenium → Playwright Converter | Local LLM Powered</title>
+  <meta name="description" content="Convert Selenium Java TestNG tests to Playwright JavaScript/TypeScript using a local LLM. Paste your code and get instant conversions." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <div class="bg-glow bg-glow-3"></div>
+
+  <!-- Header -->
+  <header class="header" id="app-header">
+    <div class="header-inner">
+      <div class="logo-section">
+        <div class="logo-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="8" fill="url(#logo-grad)" />
+            <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="1.5" fill="none" />
+            <path d="M16 8V24" stroke="white" stroke-width="1.5" opacity="0.5" />
+            <path d="M8 12L24 20" stroke="white" stroke-width="1.5" opacity="0.3" />
+            <path d="M24 12L8 20" stroke="white" stroke-width="1.5" opacity="0.3" />
+            <defs>
+              <linearGradient id="logo-grad" x1="0" y1="0" x2="32" y2="32">
+                <stop stop-color="#6366f1"/>
+                <stop offset="1" stop-color="#a855f7"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <h1>Selenium <span class="arrow-icon">→</span> Playwright</h1>
+          <p class="logo-subtitle">Local LLM Converter · CodeLlama Powered</p>
+        </div>
+      </div>
+      <div class="header-controls">
+        <div class="status-indicator" id="status-indicator">
+          <span class="status-dot"></span>
+          <span class="status-text">Checking...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Controls Bar -->
+    <div class="controls-bar" id="controls-bar">
+      <div class="controls-left">
+        <div class="control-group">
+          <label for="target-language" class="control-label">Target Language</label>
+          <div class="select-wrapper">
+            <select id="target-language" class="select-control">
+              <option value="typescript">TypeScript (.spec.ts)</option>
+              <option value="javascript">JavaScript (.spec.js)</option>
+            </select>
+          </div>
+        </div>
+        <div class="control-group">
+          <label for="file-name" class="control-label">Source File Name</label>
+          <input type="text" id="file-name" class="input-control" placeholder="e.g. LoginTest.java" />
+        </div>
+      </div>
+      <div class="controls-right">
+        <button id="convert-btn" class="btn btn-primary" onclick="handleConvert()">
+          <span class="btn-icon">⚡</span>
+          <span class="btn-text">Convert</span>
+        </button>
+        <button id="clear-btn" class="btn btn-ghost" onclick="handleClear()">
+          <span class="btn-icon">🗑️</span>
+          <span class="btn-text">Clear</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Editor Panels -->
+    <div class="editor-container" id="editor-container">
+      <!-- Input Panel -->
+      <div class="editor-panel" id="input-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="panel-icon">☕</span>
+            <span>Selenium Java + TestNG</span>
+          </div>
+          <div class="panel-actions">
+            <button class="panel-btn" onclick="handlePasteSample()" title="Load sample code">
+              <span>📋 Sample</span>
+            </button>
+            <span class="char-count" id="input-char-count">0 chars</span>
+          </div>
+        </div>
+        <div class="editor-wrapper">
+          <textarea
+            id="source-editor"
+            class="code-editor"
+            placeholder="// Paste your Selenium Java + TestNG code here...
+
+import org.openqa.selenium.*;
+import org.testng.annotations.*;
+
+public class LoginTest {
+    WebDriver driver;
+
+    @BeforeMethod
+    public void setUp() {
+        driver = new ChromeDriver();
+    }
+
+    @Test
+    public void testLogin() {
+        driver.get(&quot;https://example.com/login&quot;);
+        driver.findElement(By.id(&quot;username&quot;)).sendKeys(&quot;user&quot;);
+        driver.findElement(By.id(&quot;password&quot;)).sendKeys(&quot;pass&quot;);
+        driver.findElement(By.id(&quot;login-btn&quot;)).click();
+        Assert.assertEquals(driver.getTitle(), &quot;Dashboard&quot;);
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        driver.quit();
+    }
+}"
+            spellcheck="false"
+            oninput="updateCharCount()"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="panel-divider" id="panel-divider">
+        <div class="divider-line"></div>
+        <div class="divider-icon">→</div>
+        <div class="divider-line"></div>
+      </div>
+
+      <!-- Output Panel -->
+      <div class="editor-panel" id="output-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="panel-icon">🎭</span>
+            <span>Playwright <span id="output-lang-label">TypeScript</span></span>
+          </div>
+          <div class="panel-actions">
+            <button class="panel-btn" onclick="handleCopyOutput()" title="Copy to clipboard" id="copy-btn" style="display:none;">
+              <span>📋 Copy</span>
+            </button>
+            <button class="panel-btn" onclick="handleDownload()" title="Download file" id="download-btn" style="display:none;">
+              <span>💾 Download</span>
+            </button>
+          </div>
+        </div>
+        <div class="editor-wrapper">
+          <div id="output-editor" class="code-editor code-output">
+            <div class="output-placeholder" id="output-placeholder">
+              <div class="placeholder-icon">🎭</div>
+              <div class="placeholder-title">Converted code will appear here</div>
+              <div class="placeholder-subtitle">Paste your Selenium Java code on the left and click Convert</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay" style="display:none;">
+      <div class="loading-card">
+        <div class="loading-spinner">
+          <div class="spinner-ring"></div>
+          <div class="spinner-ring"></div>
+          <div class="spinner-ring"></div>
+        </div>
+        <div class="loading-text">Converting with CodeLlama...</div>
+        <div class="loading-subtext" id="loading-subtext">This may take a moment for complex code</div>
+        <div class="loading-timer" id="loading-timer">0s</div>
+      </div>
+    </div>
+
+    <!-- Results Bar -->
+    <div class="results-bar" id="results-bar" style="display:none;">
+      <div class="results-inner">
+        <div class="result-stats">
+          <div class="stat-item">
+            <span class="stat-icon">⏱️</span>
+            <span class="stat-label">Time:</span>
+            <span class="stat-value" id="stat-time">—</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">🤖</span>
+            <span class="stat-label">Model:</span>
+            <span class="stat-value" id="stat-model">—</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">📄</span>
+            <span class="stat-label">Output:</span>
+            <span class="stat-value" id="stat-file">—</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">⚠️</span>
+            <span class="stat-label">Warnings:</span>
+            <span class="stat-value" id="stat-warnings">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Warnings Panel -->
+    <div class="warnings-panel" id="warnings-panel" style="display:none;">
+      <div class="warnings-header">
+        <span class="warnings-icon">⚠️</span>
+        <span class="warnings-title">Conversion Warnings</span>
+        <button class="warnings-close" onclick="document.getElementById('warnings-panel').style.display='none'">✕</button>
+      </div>
+      <ul class="warnings-list" id="warnings-list"></ul>
+    </div>
+  </main>
+
+  <!-- Toast Notifications -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
