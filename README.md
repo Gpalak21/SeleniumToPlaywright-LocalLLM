@@ -86,7 +86,7 @@ Combines **Prompt Engineering** with a strictly defined ruleset (stored in `gemi
 3. **Configure Environment**
    Create a `.env` file from the example:
    ```env
-   PORT=8080
+   PORT=8081
    OLLAMA_MODEL=codellama
    OLLAMA_BASE_URL=http://localhost:11434
    ```
@@ -100,7 +100,7 @@ Combines **Prompt Engineering** with a strictly defined ruleset (stored in `gemi
 
 ## 🚦 Usage Guide
 
-1. Navigate to `http://localhost:8080`.
+1. Navigate to `http://localhost:8081`.
 2. Ensure the status indicator shows **"codellama ready"** (green).
 3. Paste your Selenium Java class.
 4. Set your target (TypeScript or JavaScript).
